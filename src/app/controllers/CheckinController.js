@@ -3,6 +3,7 @@ import { Op } from 'sequelize';
 
 import Checkin from '../models/Checkin';
 import Student from '../models/Student';
+import Enrollment from '../models/Enrollment';
 
 class CheckinController {
   async index(req, res) {
@@ -20,6 +21,15 @@ class CheckinController {
     if (!studentExists) {
       return res.status(400).json({ error: 'Student not exists.' });
     }
+
+    const enrollmentExists = await Enrollment.findOne({
+      where: { student_id },
+    });
+
+    if (!enrollmentExists) {
+      return res.status(400).json({ error: 'Student has not enrollment.' });
+    }
+
     const oldDate = format(subDays(new Date(), 7), 'yyyy-MM-dd');
 
     const oldCheckins = await Checkin.count({

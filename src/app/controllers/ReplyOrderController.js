@@ -2,7 +2,9 @@ import * as Yup from 'yup';
 
 import HelpOrder from '../models/HelpOrder';
 import Student from '../models/Student';
-import Mail from '../../lib/Mail';
+
+import ReplyOrderMail from '../jobs/ReplyOrderMail';
+import Queue from '../../lib/Queue';
 
 class ReplyOrderController {
   async store(req, res) {
@@ -20,14 +22,13 @@ class ReplyOrderController {
 
     await order.update(req.body);
 
-    const student = await Student.findByPk(req.params.id, {
+    const student = await Student.findByPk(order.student_id, {
       attributes: ['name', 'email'],
     });
 
-    await Mail.sendMail({
-      to: `${student.name} <${student.email}>`,
-      subject: 'Resposta | GYM Point',
-      text: 'Sua pergunta foi respondida, verifique abaixo',
+    await Queue.add(ReplyOrderMail.key, {
+      student,
+      order,
     });
 
     return res.json(order);

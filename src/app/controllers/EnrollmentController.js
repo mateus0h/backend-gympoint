@@ -37,6 +37,10 @@ class EnrollmentController {
 
     const plan = await Plan.findByPk(plan_id);
 
+    if (!plan) {
+      return res.status(400).json({ error: 'Plan not exists.' });
+    }
+
     const price = plan.price * plan.duration;
 
     const end_date = addMonths(parseISO(req.body.start_date), plan.duration);
@@ -80,13 +84,18 @@ class EnrollmentController {
     }
 
     const enrollment = await Enrollment.findByPk(req.params.id);
-
     // Checks if the Enrollment ID exists.
     if (enrollment === null) {
       return res.status(404).json({ error: 'Enrollment not exists.' });
     }
 
     const { student_id, plan_id } = req.body;
+
+    const studentExists = await Student.findByPk(student_id);
+
+    if (!studentExists) {
+      return res.status(400).json({ error: 'Student not exists.' });
+    }
 
     // Checks if the student already has enrollment.
     if (student_id !== enrollment.student_id) {
@@ -101,6 +110,10 @@ class EnrollmentController {
 
     if (plan_id !== enrollment.plan_id) {
       const plan = await Plan.findOne({ where: { id: plan_id } });
+
+      if (!plan) {
+        return res.status(400).json({ error: 'Plan not exists.' });
+      }
 
       req.body.price = plan.price * plan.duration;
 
