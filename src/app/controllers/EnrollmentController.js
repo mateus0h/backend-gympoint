@@ -5,7 +5,8 @@ import Plan from '../models/Plan';
 import Enrollment from '../models/Enrollment';
 import Student from '../models/Student';
 
-import Mail from '../../lib/Mail';
+import EnrollmentMail from '../jobs/EnrollmentMail';
+import Queue from '../../lib/Queue';
 
 class EnrollmentController {
   async index(req, res) {
@@ -32,22 +33,36 @@ class EnrollmentController {
       return res.status(400).json({ error: 'Student already enrolled.' });
     }
 
-    const plan = await Plan.findOne({ where: { id: req.body.plan_id } });
+    const { start_date, student_id, plan_id } = req.body;
 
-    req.body.price = plan.price * plan.duration;
+    const plan = await Plan.findByPk(plan_id);
 
-    req.body.end_date = addMonths(parseISO(req.body.start_date), plan.duration);
+    const price = plan.price * plan.duration;
 
-    const enrollment = await Enrollment.create(req.body);
+    const end_date = addMonths(parseISO(req.body.start_date), plan.duration);
 
-    const student = await Student.findByPk(req.body.student_id, {
+    const student = await Student.findByPk(student_id, {
       attributes: ['name', 'email'],
     });
 
-    await Mail.sendMail({
-      to: `${student.name} <${student.email}>`,
-      subject: 'Matricula GYM Point',
-      text: 'Matricula efetuada com sucesso, confira suas informações',
+    if (!student) {
+      return res.status(400).json({ error: 'Student not exists.' });
+    }
+
+    const enrollment = await Enrollment.create({
+      start_date,
+      student_id,
+      plan_id,
+      end_date,
+      price,
+    });
+
+    await Queue.add(EnrollmentMail.key, {
+      student,
+      enrollment,
+      plan,
+      price,
+      end_date,
     });
 
     return res.json(enrollment);
