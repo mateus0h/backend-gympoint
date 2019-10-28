@@ -5,6 +5,13 @@ import Checkin from '../models/Checkin';
 import Student from '../models/Student';
 
 class CheckinController {
+  async index(req, res) {
+    const chekins = await Checkin.findAll({
+      where: { student_id: req.params.id },
+    });
+    return res.json(chekins);
+  }
+
   async store(req, res) {
     const student_id = req.params.id;
 
