@@ -19,6 +19,13 @@ class ReplyOrderController {
     req.body.answer_at = new Date();
 
     const order = await HelpOrder.findByPk(req.params.id);
+    if (!order) {
+      return res.status(400).json({ error: 'Help request not found.' });
+    }
+
+    if (order.answer) {
+      return res.status(400).json({ error: 'Help request already answered.' });
+    }
 
     await order.update(req.body);
 
