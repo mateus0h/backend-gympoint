@@ -1,8 +1,33 @@
 <strong>Olá, {{ student }}</strong>
 <p> Sua Matricula foi efetuada com sucesso! Segue os dados da mesma: </p>
-<p>
-  <strong>Plano:</strong> {{ plan }} .<br />
-  <strong>Valor Total:</strong> {{ price }} .<br />
-  <strong>Duração:</strong> {{ duration }} .<br />
-  <strong>Data Termino:</strong> {{ end_date }} .<br />
-</p>
+<table>
+  <thead>
+    <tr>
+      <th>Plano</th>
+      <th>Duração</th>
+      <th>Valor Total</th>
+      <th>Termino</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{{ plan }}</td>
+      <td>{{ duration }}</td>
+      <td>{{ price }}</td>
+      <td>{{ end_date }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<style>
+  th, td {
+    border-bottom: 1px solid #ee4b62;
+    padding: 15px;
+  }
+  th {
+    background-color: #ee4c63;
+    border-bottom: 1px solid #ee4b62;
+    padding: 7px;
+    color: #fff;
+  }
+</style>

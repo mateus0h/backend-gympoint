@@ -20,8 +20,8 @@ class EnrollmentMail {
           plan.duration === 1
             ? `${plan.duration} Mês`
             : `${plan.duration} Meses`,
-        price,
-        end_date: format(parseISO(end_date), "'dia' dd 'de' MMMM'", {
+        price: `R$ ${price}`,
+        end_date: format(parseISO(end_date), "dd 'de' MMMM'", {
           locale: pt,
         }),
       },
