@@ -10,8 +10,22 @@ import Queue from '../../lib/Queue';
 
 class EnrollmentController {
   async index(req, res) {
-    const enrollment = await Enrollment.findAll();
-    return res.json(enrollment);
+    const enrollments = await Enrollment.findAll({
+      attributes: ['id', 'start_date', 'end_date', 'price', 'active'],
+      include: [
+        {
+          model: Student,
+          as: 'student',
+          attributes: ['name', 'id'],
+        },
+        {
+          model: Plan,
+          as: 'plan',
+          attributes: ['title', 'id'],
+        },
+      ],
+    });
+    return res.json(enrollments);
   }
 
   async store(req, res) {
@@ -89,7 +103,7 @@ class EnrollmentController {
       return res.status(404).json({ error: 'Enrollment not exists.' });
     }
 
-    const { student_id, plan_id } = req.body;
+    const { student_id, plan_id, start_date } = req.body;
 
     const studentExists = await Student.findByPk(student_id);
 
@@ -108,7 +122,10 @@ class EnrollmentController {
       }
     }
 
-    if (plan_id !== enrollment.plan_id) {
+    if (
+      plan_id !== enrollment.plan_id ||
+      enrollment.start_date !== start_date
+    ) {
       const plan = await Plan.findOne({ where: { id: plan_id } });
 
       if (!plan) {

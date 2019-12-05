@@ -1,8 +1,27 @@
 import * as Yup from 'yup';
+import { Op } from 'sequelize';
 
 import Student from '../models/Student';
 
 class StudentController {
+  async index(req, res) {
+    const { name } = req.query;
+    if (name) {
+      const student = await Student.findAll({
+        where: {
+          name: {
+            [Op.iLike]: `%${name}%`,
+          },
+        },
+      });
+
+      return res.json(student);
+    }
+
+    const students = await Student.findAll();
+    return res.json(students);
+  }
+
   async store(req, res) {
     const schema = Yup.object().shape({
       name: Yup.string().required(),
@@ -73,6 +92,18 @@ class StudentController {
       weight,
       height,
     });
+  }
+
+  async delete(req, res) {
+    const student = await Student.findByPk(req.params.id);
+
+    if (!student) {
+      return res.status(404).json({ error: 'Plan not found.' });
+    }
+
+    await student.destroy();
+
+    return res.json();
   }
 }
 
