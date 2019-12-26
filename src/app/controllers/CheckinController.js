@@ -7,9 +7,27 @@ import Enrollment from '../models/Enrollment';
 
 class CheckinController {
   async index(req, res) {
+    const { id } = req.params;
+    const { page } = req.query;
+
+    const offset = page * 7;
+    const limit = 7;
+
+    if (page) {
+      const chekins = await Checkin.findAll({
+        limit,
+        offset,
+        where: { student_id: id },
+        order: [['id', 'DESC']],
+      });
+
+      return res.json(chekins);
+    }
+
     const chekins = await Checkin.findAll({
-      where: { student_id: req.params.id },
+      where: { student_id: id },
     });
+
     return res.json(chekins);
   }
 
