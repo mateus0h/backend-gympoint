@@ -11,21 +11,17 @@ class CheckinController {
     const { page } = req.query;
 
     const offset = page * 7;
-    const limit = 7;
 
+    const dbQuery = {};
     if (page) {
-      const chekins = await Checkin.findAll({
-        limit,
-        offset,
-        where: { student_id: id },
-        order: [['id', 'DESC']],
-      });
-
-      return res.json(chekins);
+      dbQuery.limit = 7;
+      dbQuery.offset = offset;
     }
 
     const chekins = await Checkin.findAll({
+      ...dbQuery,
       where: { student_id: id },
+      order: [['id', 'DESC']],
     });
 
     return res.json(chekins);

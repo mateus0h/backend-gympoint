@@ -48,21 +48,17 @@ class HelpOrderController {
     const { page } = req.query;
 
     const offset = page * 4;
-    const limit = 4;
+
+    const dbQuery = {};
 
     if (page) {
-      const helpOrders = await HelpOrder.findAll({
-        limit,
-        offset,
-        order: [['id', 'DESC']],
-        where: { student_id: req.params.id },
-      });
-
-      return res.json(helpOrders);
+      dbQuery.limit = 4;
+      dbQuery.offset = offset;
     }
 
     const helpOrders = await HelpOrder.findAll({
-      order: [['id', 'DESC']],
+      ...dbQuery,
+      order: [['id', 'ASC']],
       where: { student_id: req.params.id },
     });
 
