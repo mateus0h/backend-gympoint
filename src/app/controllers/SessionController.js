@@ -43,12 +43,6 @@ class SessionControler {
       }),
     });
   }
-
-  async teste(req, res) {
-    return res.json({
-      action: 'não derrubou',
-    });
-  }
 }
 
 export default new SessionControler();
