@@ -75,13 +75,13 @@ class EnrollmentController {
       price,
     });
 
-    // await Queue.add(EnrollmentMail.key, {
-    //   student,
-    //   enrollment,
-    //   plan,
-    //   price,
-    //   end_date,
-    // });
+    await Queue.add(EnrollmentMail.key, {
+      student,
+      enrollment,
+      plan,
+      price,
+      end_date,
+    });
 
     return res.json(enrollment);
   }
